@@ -18,7 +18,7 @@ conda activate protein_design
 ```
 To avoid having to manually activate the environment every time I use use
 [direnv](https://direnv.net/) (highly recommended!).
-I begin by installing PyTorch. Since I am on mac I just install the default version without CUDA .
+Next, I begin by installing PyTorch. Since I am on mac I just install the default version without CUDA .
 
 ``` sh
 conda install python=3.9
