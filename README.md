@@ -12,10 +12,20 @@ conda create [-p /optional/prefix] -n protein_design
 ```
 
 ## Installing python packages
-
-We will begin with PyTorch. Since I am on mac I just install the default version without CUDA.
+First I need to activate the newly activated environment so that the pagakes get installed there,
+``` sh
+conda activate protein_design
+```
+To avoid having to manually activate the environment every time I use use
+[direnv](https://direnv.net/) (highly recommended!).
+I begin by installing PyTorch. Since I am on mac I just install the default version without CUDA .
 
 ``` sh
 conda install python=3.9
 pip3 install torch torchvision torchaudio
+```
+Next, I install pandas to efficiently read the dataset, which is stored in a `.cvs` file.
+
+``` sh
+pip3 install pandas
 ```
