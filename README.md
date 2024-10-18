@@ -29,3 +29,8 @@ Next, I install pandas to efficiently read the dataset, which is stored in a `.c
 ``` sh
 pip3 install pandas
 ```
+
+I also experiment with some base model for protein sequences, which are available on Hugging Face. To do that, I also need to install [Hugging Face package](https://huggingface.co/docs/transformers/installation) for Pytorch (CPU-only version).
+``` sh
+pip install 'transformers[torch]'
+```
