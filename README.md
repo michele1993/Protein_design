@@ -29,7 +29,7 @@ Next, I install pandas to efficiently read the dataset, which is stored in a `.c
 ``` sh
 pip3 install pandas
 ```
-## Generative protein sequence model 
+## Generative protein sequence base model 
 I experimented with [ProtGPT2](https://huggingface.co/nferruz/ProtGPT2) base model for protein sequences, which is available on Hugging Face. To do that, I install [Hugging Face package](https://huggingface.co/docs/transformers/installation) for Pytorch (CPU-only version).
 ``` sh
 pip install 'transformers[torch]'
