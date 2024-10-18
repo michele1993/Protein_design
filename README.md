@@ -29,8 +29,20 @@ Next, I install pandas to efficiently read the dataset, which is stored in a `.c
 ``` sh
 pip3 install pandas
 ```
-
-I also experiment with some base model for protein sequences, which are available on Hugging Face. To do that, I also need to install [Hugging Face package](https://huggingface.co/docs/transformers/installation) for Pytorch (CPU-only version).
+## Generative protein sequence model 
+I experimented with [ProtGPT2](https://huggingface.co/nferruz/ProtGPT2) base model for protein sequences, which is available on Hugging Face. To do that, I install [Hugging Face package](https://huggingface.co/docs/transformers/installation) for Pytorch (CPU-only version).
 ``` sh
 pip install 'transformers[torch]'
 ```
+The model also provides a fine-turning option, which allows you to fine-tune the model to a specific dataset. To do that, I dowloaded the `run_clm.py` file from [Hugging face website](https://github.com/huggingface/transformers/blob/main/examples/pytorch/language-modeling/run_clm.py).
+```sh
+wget https://raw.githubusercontent.com/huggingface/transformers/refs/heads/main/examples/pytorch/language-modeling/run_clm.py
+```
+
+**Note**: When trying to run `python run_clm.py` I encoutered an error with my Hugging face version. This was solved by installing Hugging face from source.
+```sh
+git clone https://github.com/huggingface/transformers.git
+cd transformers
+pip install -e .
+```
+
