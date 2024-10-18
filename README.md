@@ -34,7 +34,7 @@ I experimented with [ProtGPT2](https://huggingface.co/nferruz/ProtGPT2) base mod
 ``` sh
 pip install 'transformers[torch]'
 ```
-The model also provides a fine-turning option, which allows you to fine-tune the model to a specific dataset. To do that, I dowloaded the `run_clm.py` file from [Hugging face website](https://github.com/huggingface/transformers/blob/main/examples/pytorch/language-modeling/run_clm.py).
+The model also provides a fine-turning option, which allows you to fine-tune the model to a specific dataset. To do that, I dowloaded the `run_clm.py` file from the specified Hugging face [repository](https://github.com/huggingface/transformers/blob/main/examples/pytorch/language-modeling/run_clm.py).
 ```sh
 wget https://raw.githubusercontent.com/huggingface/transformers/refs/heads/main/examples/pytorch/language-modeling/run_clm.py
 ```
