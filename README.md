@@ -34,7 +34,7 @@ I experimented with [ProtGPT2](https://huggingface.co/nferruz/ProtGPT2) base mod
 ``` sh
 pip install transformers
 ```
-For CPU-only uses,
+For CPU-only use,
 ```sh
 pip install 'transformers[torch]'
 ```
