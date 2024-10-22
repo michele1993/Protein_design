@@ -34,8 +34,14 @@ class ProteinDataset(Dataset):
 
         assert ~pd.isna(dataset).any().any(), "There are NaN entries in the data, need cleaning"
 
-        # Remove duplicates by only keeping 'first' occurance for each
-        return dataset.drop_duplicates(subset="mutated_sequence", keep="first")
+        # Check there are not duplicates in the protein seq which reuqire attention
+        duplicats = dataset.duplicated(subset="mutated_sequence")
+        assert ~duplicats.any().any(), "There are duplicated protein sequences, investigate and decide how to deal with them"
+
+        # 1st option: remove duplicate based on first occurence, may not be best option depending on type of duplicates 
+        #dataset = dataset.drop_duplicates(subset="mutated_sequence", keep="first") 
+
+        return dataset 
 
     def __len__(self):
         """ Override len method as required"""

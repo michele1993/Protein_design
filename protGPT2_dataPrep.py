@@ -4,7 +4,10 @@ import numpy as np
 import torch
 
 # Define helper method
-def insert_line(seq, every=60):
+def insert_char(seq, every=60):
+    """
+    Insert a character into a string every `n` characters.
+    """
     return '\n'.join(seq[i:i+every] for i in range(0, len(seq), every))
 
 # Load data
@@ -24,24 +27,21 @@ assert ~pd.isna(data_cleaned).any().any(), "There are NaN entries in the data, n
 ## ----------------------------
 
 ## ------ 2nd Remove any duplicate entry ----
-# Remove duplicates by only keeping 'first' occurance for each
-data_cleaned = data_cleaned.drop_duplicates(subset="mutated_sequence", keep="first")
+# Check there are not duplicates in the protein seq which reuqire attention
+duplicats = data_cleaned.duplicated(subset="mutated_sequence")
+assert ~duplicats.any().any(), "There are duplicated protein sequences, investigate and decide how to deal with them"
+
+# 1st option: remove duplicate based on first occurence, may not be best option depending on type of duplicates 
+#data_cleaned = data_cleaned.drop_duplicates(subset="mutated_sequence", keep="first") 
 ## -------------------------------------------
 
 ## ------- 3rd Divide data in training and validation and add tokens ----
 # for the moment ingore the activations just with all sequences
 data_cleaned_seq = data_cleaned.iloc[:,0]
 
-# 1st need to add "<|endoftext|>" token at the beginning of each seq
-special_token = "<|endoftext|>"
-data_cleaned_seq = special_token + data_cleaned_seq
-
-# 2nd add a newline character every 60 aminoacids (required format ?)
-data_cleaned_seq = [insert_line(data_cleaned_seq[i]) for i in range(len(data_cleaned_seq))]
-
-# 2nd need to slip the data in training and validation
+# 3rd need to slip the data in training and validation
 # Select % of validation seqs (i.e., 90/10)
-n_seq = data_cleaned_seq.shape[0]
+n_seq = len(data_cleaned_seq)
 n_validation = n_seq // 10
 
 # Select n. random indexes for validation 
@@ -50,6 +50,17 @@ val_indx = np.random.randint(0, n_seq, n_validation)
 val_seq = data_cleaned_seq.iloc[val_indx]
 # Select training seqs by eliminating validation seqs
 training_seq = data_cleaned_seq.drop(index=val_indx)
+
+# 1st  we have to introduce new line characters every 60 amino acids,
+# following the FASTA file format.
+training_seq = [insert_char(training_seq.iloc[i]) for i in range(len(training_seq))]
+val_seq = [insert_char(val_seq.iloc[i]) for i in range(len(val_seq))]
+
+# 2nd need to add "<|endoftext|>" token at the beginning and end of each seq
+special_token = "<|endoftext|>"
+training_seq = [ f'{special_token}{s}{special_token}' for s in training_seq]
+val_seq = [ f'{special_token}{s}{special_token}' for s in val_seq]
+
 
 # 3rd: concatane all strings together and save in a txt file
 training_concatenated = ''.join(training_seq)
