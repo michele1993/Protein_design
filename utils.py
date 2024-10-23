@@ -1,6 +1,12 @@
 import pandas as pd
 import numpy as np
 
+def insert_char(seq, char, every):
+    """
+    Insert a character into a string every `n` characters.
+    """
+    return char.join(seq[i:i+every] for i in range(0, len(seq), every))
+
 def protData_cleaning(dataset):
     """ 
     Perform basic data cleaning: remove NaN, duplicates and ODD

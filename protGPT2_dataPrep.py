@@ -2,14 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import torch
-from utils import protData_cleaning
-
-# Define helper method
-def insert_char(seq, every=60):
-    """
-    Insert a character into a string every `n` characters.
-    """
-    return '\n'.join(seq[i:i+every] for i in range(0, len(seq), every))
+from utils import protData_cleaning, insert_char
 
 # Load data
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -39,8 +32,8 @@ training_seq = data_cleaned_seq.drop(index=val_indx)
 ## --------- 3rd Convert data to FASTA file format and add special token ------------
 # 1st  we have to introduce new line characters every 60 amino acids,
 # following the FASTA file format.
-training_seq = [insert_char(training_seq.iloc[i]) for i in range(len(training_seq))]
-val_seq = [insert_char(val_seq.iloc[i]) for i in range(len(val_seq))]
+training_seq = [insert_char(training_seq.iloc[i], char='\n', every=60) for i in range(len(training_seq))]
+val_seq = [insert_char(val_seq.iloc[i], char='\n', every=60) for i in range(len(val_seq))]
 
 # 2nd need to add "<|endoftext|>" token at the beginning and end of each seq
 special_token = "<|endoftext|>"
