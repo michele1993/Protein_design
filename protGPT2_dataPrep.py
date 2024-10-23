@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import torch
+from utils import protData_cleaning
 
 # Define helper method
 def insert_char(seq, every=60):
@@ -16,26 +17,10 @@ file_path = os.path.join(root_dir,'dataset','sequences.csv')
 
 dataset = pd.read_csv(file_path)
 
+## ------ 1st Clean data -----
+data_cleaned = protData_cleaning(dataset=dataset)
 
-## ------ 1st Remove any pair if contains NaN -----
-# identify any row with NaN
-data_nan = pd.isna(dataset).sum(axis=1).astype('bool') # sum to identify if there is at least one NaN entry in a row.
-# remove entries with NaN entirely 
-data_cleaned = dataset.loc[~data_nan, :]
-
-assert ~pd.isna(data_cleaned).any().any(), "There are NaN entries in the data, need cleaning"
-## ----------------------------
-
-## ------ 2nd Remove any duplicate entry ----
-# Check there are not duplicates in the protein seq which reuqire attention
-duplicats = data_cleaned.duplicated(subset="mutated_sequence")
-assert ~duplicats.any().any(), "There are duplicated protein sequences, investigate and decide how to deal with them"
-
-# 1st option: remove duplicate based on first occurence, may not be best option depending on type of duplicates 
-#data_cleaned = data_cleaned.drop_duplicates(subset="mutated_sequence", keep="first") 
-## -------------------------------------------
-
-## ------- 3rd Divide data in training and validation and add tokens ----
+## ------- 2nd Divide data in training and validation and add tokens ----
 # for the moment ingore the activations just with all sequences
 data_cleaned_seq = data_cleaned.iloc[:,0]
 
@@ -47,10 +32,11 @@ n_validation = n_seq // 10
 # Select n. random indexes for validation 
 val_indx = np.random.randint(0, n_seq, n_validation)
 # Select validation seqs
-val_seq = data_cleaned_seq.iloc[val_indx]
+val_seq = data_cleaned_seq.iloc[val_indx].copy()
 # Select training seqs by eliminating validation seqs
 training_seq = data_cleaned_seq.drop(index=val_indx)
 
+## --------- 3rd Convert data to FASTA file format and add special token ------------
 # 1st  we have to introduce new line characters every 60 amino acids,
 # following the FASTA file format.
 training_seq = [insert_char(training_seq.iloc[i]) for i in range(len(training_seq))]
@@ -66,7 +52,7 @@ val_seq = [ f'{special_token}{s}{special_token}' for s in val_seq]
 training_concatenated = ''.join(training_seq)
 val_concatenated = ''.join(val_seq)
 
-# Save concatenated strings
+## ----- 4th Save concatenated strings -----
 with open('training.txt','w') as file:
     file.write(training_concatenated)
 
