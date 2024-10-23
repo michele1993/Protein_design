@@ -20,7 +20,7 @@ def protData_cleaning(dataset):
     assert ~pd.isna(data_cleaned).any().any(), "There are NaN entries in the data, need cleaning"
     ## ----------------------------
 
-    ## ------ 2nd Remove any duplicate entry ----
+    ## ------ 2nd Investigate any duplicate entry ----
     # Check there are not duplicates in the protein seq which reuqire attention
     duplicats = data_cleaned.duplicated(subset="mutated_sequence")
     assert ~duplicats.any().any(), "There are duplicated protein sequences, investigate and decide how to deal with them"
