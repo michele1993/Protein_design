@@ -26,7 +26,19 @@ def protData_cleaning(dataset):
     assert ~pd.isna(data_cleaned).any().any(), "There are NaN entries in the data, need cleaning"
     ## ----------------------------
 
-    ## ------ 2nd Investigate any duplicate entry ----
+    ## -------- 2nd Check only known aminoacids are present ----
+    # Define natural amino acids
+    natural_AM = set(['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L','M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'])
+
+    # Merge all sequences together
+    merged_AM = ''.join(data_cleaned.iloc[:,0])
+    # Find unique elements
+    unique_AM = set(merged_AM)
+
+    # Assert amino acid is seq is a subset of natural aminoacid
+    assert unique_AM.issubset(natural_AM), "The sequences contain some unknown letters, investigate and decide how to deal with them"
+
+    ## ------ 3nd Investigate any duplicate entry ----
     # Check there are not duplicates in the protein seq which reuqire attention
     duplicats = data_cleaned.duplicated(subset="mutated_sequence")
     assert ~duplicats.any().any(), "There are duplicated protein sequences, investigate and decide how to deal with them"
@@ -35,7 +47,7 @@ def protData_cleaning(dataset):
     #data_cleaned = data_cleaned.drop_duplicates(subset="mutated_sequence", keep="first") 
     ## -------------------------------------------
 
-    ## ---- 3rd Remove sequences with out of distribution lengths ---
+    ## ---- 4rd Remove sequences with out of distribution lengths ---
     seq_lengths = data_cleaned["mutated_sequence"].str.len().tolist()
 
     # Calculate quartiles and IQR
