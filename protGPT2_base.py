@@ -18,7 +18,7 @@ model = GPT2Model.from_pretrained(model_name)
 root_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(root_dir,'output')
 
-protgpt2 = pipeline('text-generation', model=model_path)
+ft_protgpt2 = pipeline('text-generation', model=model_path)
 #dev = torch.device("cpu")
 
 # Load tokenizer and model
