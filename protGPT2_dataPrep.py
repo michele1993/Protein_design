@@ -40,7 +40,6 @@ special_token = "<|endoftext|>"
 training_seq = [ f'{special_token}{s}{special_token}' for s in training_seq]
 val_seq = [ f'{special_token}{s}{special_token}' for s in val_seq]
 
-
 # 3rd: concatane all strings together and save in a txt file
 training_concatenated = ''.join(training_seq)
 val_concatenated = ''.join(val_seq)
