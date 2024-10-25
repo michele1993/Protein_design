@@ -62,10 +62,7 @@ def protData_cleaning(dataset, remove_activity_NaN=True):
     ## ---- 4rd Remove sequences with out of distribution lengths ---
     seq_lengths = data_cleaned["mutated_sequence"].str.len().tolist()
 
-    # Calculate quartiles and IQR
-    #NOTE: there are a few very short-lenght seq and a couple 
-    # of longer-length seq, whcih are close to mode length
-    # so decided to keep upper percentile to compute IQR.
+    # Calculate quartiles and IQR 20-80 %
     Q1 = np.percentile(seq_lengths, 20)
     Q3 = np.percentile(seq_lengths, 80)
     IQR = Q3 - Q1
