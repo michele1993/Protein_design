@@ -4,6 +4,8 @@ import numpy as np
 from torch.utils.data import Dataset
 import torch
 from utils import protData_cleaning
+import sys
+sys.setrecursionlimit(1500)  # Increase if needed for deeper structures
 
 class ProteinDataset(Dataset):
     """ Dataset class to be passed to DataLoader for protein dataset"""

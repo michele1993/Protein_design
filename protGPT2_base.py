@@ -1,17 +1,31 @@
 from transformers import pipeline, GPT2Tokenizer, GPT2LMHeadModel, GPT2Model
 import os
+from torch.distributions import Categorical
+import torch.nn.functional as F
 
 model_name = "nferruz/ProtGPT2"
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 model_head = GPT2LMHeadModel.from_pretrained(model_name)
-model = GPT2Model.from_pretrained(model_name)
+#model = GPT2Model.from_pretrained(model_name) # embedding only, without head
 
-#trial_seq = '<|endoftext|>KKKKKKKKKKKKK<|endoftext|>'
+trial_seq = '<|endoftext|>ATAPSIKSGTILHAWNWSFNTLKHNMKDIHDAGYTAIQTSPINQVKEGNQGDKSMSNWYW'
+
 #input_ids = tokenizer.encode(trial_seq)
-#input_ids = tokenizer(trial_seq, return_tensors='pt')
-#outputs = model(**input_ids)
-#print(outputs[0].shape)
-#exit()
+input_ids = tokenizer(trial_seq, return_tensors='pt')
+
+#emb_outputs = model(**input_ids)
+pred_outputs = model_head(**input_ids)
+
+#print(emb_outputs[0].shape)
+#print(pred_outputs[0].shape)
+
+d = Categorical(F.softmax(pred_outputs[0].squeeze(), dim=-1))
+sampled_tokens = d.sample()
+print(input_ids['input_ids'].shape)
+print(pred_outputs[0].shape)
+print(trial_seq)
+print(tokenizer.decode(sampled_tokens))
+exit()
 
 
 # Get path to fine-tuned model

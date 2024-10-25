@@ -67,7 +67,7 @@ def protData_cleaning(dataset, remove_activity_NaN=True):
     # of longer-length seq, whcih are close to mode length
     # so decided to keep upper percentile to compute IQR.
     Q1 = np.percentile(seq_lengths, 20)
-    Q3 = np.percentile(seq_lengths, 100)
+    Q3 = np.percentile(seq_lengths, 80)
     IQR = Q3 - Q1
 
     # Define bounds with 1.5 * IQR
