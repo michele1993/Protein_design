@@ -19,7 +19,7 @@ class ProteinDataset(Dataset):
         dataset = pd.read_csv(csv_file)
 
         ## Apply basic data cleaning
-        self.clean_data = protData_cleaning(dataset=dataset)
+        self.clean_data = protData_cleaning(dataset=dataset, remove_activity_NaN=True)
 
         # Split amino acids sequence from activations and convert to numpy
         self.amino = self.clean_data['mutated_sequence'].to_numpy()

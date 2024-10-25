@@ -7,23 +7,35 @@ def insert_char(seq, char, every):
     """
     return char.join(seq[i:i+every] for i in range(0, len(seq), every))
 
-def protData_cleaning(dataset):
+def protData_cleaning(dataset, remove_activity_NaN=True):
     """ 
     Perform basic data cleaning: remove NaN, duplicates and ODD
     Args:
         dataset: dataset of protein seq and activity in pd.DataFrame, ["mutated_sequence", "activity_dp7"]
+        remove_activity_NaN: if True remove entire sequences that have NaN activity (e.g., for RLHF)
     """
+    ## ------ 1st Remove  NaN -----
+    # NOTE: to train/fine-tune the base model, keep 'normal-looking' sequences with NaN activity
+    # since don't need activity
 
-    ## ------ 1st Remove any pair if contains NaN -----
-    # identify any row with NaN
-    data_nan = pd.isna(dataset).sum(axis=1).astype('bool') # sum to identify if there is at least one NaN entry in a row.
-    # remove entries with NaN entirely 
-    data_cleaned = dataset.loc[~data_nan, :] # use .loc since bool indexes
+    # identify any NaN sequence
+    seq_nan = pd.isna(dataset['mutated_sequence']).astype('bool') # check if there is any NaN sequence
+
+    # remove entries with NaN seq 
+    data_cleaned = dataset.loc[~seq_nan, :] # use .loc since bool indexes
+
+    assert ~pd.isna(data_cleaned['mutated_sequence']).any().any(), "There are NaN entries in the sequences, need cleaning"
+    
+    # When we do RLHF we want to remove sequences with NaN activity
+    if remove_activity_NaN:
+        activity_nan = pd.isna(data_cleaned['activity_dp7']).astype('bool') # check if there is any NaN sequence
+        # remove entries entirely if have NaN activity (e.g., for RLHF)
+        data_cleaned = data_cleaned.loc[~activity_nan, :] # use .loc since bool indexes
+        assert ~pd.isna(data_cleaned).any().any(), "There are sequences with NaN activity, need cleaning"
 
     # just in case: reset indexes after above slicing
     data_cleaned = data_cleaned.reset_index(drop=True)
 
-    assert ~pd.isna(data_cleaned).any().any(), "There are NaN entries in the data, need cleaning"
     ## ----------------------------
 
     ## -------- 2nd Check only known aminoacids are present ----

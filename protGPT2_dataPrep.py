@@ -11,7 +11,7 @@ file_path = os.path.join(root_dir,'dataset','sequences.csv')
 dataset = pd.read_csv(file_path)
 
 ## ------ 1st Clean data -----
-data_cleaned = protData_cleaning(dataset=dataset)
+data_cleaned = protData_cleaning(dataset=dataset, remove_activity_NaN=False)
 
 ## ------- 2nd Divide data in training and validation and add tokens ----
 # for the moment ingore the activations just with all sequences
