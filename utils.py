@@ -82,3 +82,32 @@ def protData_cleaning(dataset, remove_activity_NaN=True):
 
     return data_cleaned
 
+def find_longest_common_prefix(sequence: list[str]) -> tuple[str, int]:
+    """
+    Find the longest common prefix shared by all strings in the input list.
+
+    Args:
+        sequence: List of amino acid sequences
+    """
+    if not sequence:
+        return '', 0
+
+    if len(sequence) == 1:
+        return sequence[0], len(sequence[0])
+
+    # Find length of shortest string to set upper bound
+    min_length = min(len(s) for s in sequence)
+
+    # Compare characters position by position
+    common_prefix = []
+    for i in range(min_length):
+        current_char = sequence[0][i]
+
+        # Check if this character matches in all strings
+        if all(s[i] == current_char for s in sequence):
+            common_prefix.append(current_char)
+        else:
+            break
+
+    prefix = ''.join(common_prefix)
+    return prefix
