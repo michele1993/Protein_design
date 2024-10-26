@@ -19,6 +19,8 @@ clean_dataset = protData_cleaning(dataset=dataset, remove_activity_NaN=True)
 
 #trial = ['ABCDEFGHILDDHSBEJDNNSNDJF','ABCDEFGHILDdhsbdsh', 'ABCDEFGHILDndnsndnsj', 'ABCDEFGHILDndjsndj']
 
+#TODO: DATA need to be in FASTA format!
+
 # Find longest prefix shared by all sequences for prompt
 prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequence']))
 
