@@ -13,7 +13,7 @@ class Seq_Label_Tokenization():
     def __init__(self, clean_dataset, aminoacid_data=False):
         """ Args:
                 clean_dataset = dataset of already cleaned data in format sequence and labels
-                aminoacid_data = whether the data involves aminoacid sequences
+                aminoacid_data = whether the data involves natural aminoacid sequences only
         """
 
         # Initialise tokenizer function
