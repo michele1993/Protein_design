@@ -39,14 +39,19 @@ def format_for_dpo_trainer(pairs_df: pd.DataFrame, prompt: str) -> List[Dict]:
         pairs_df: DataFrame with chosen and rejected sequences
         prompt: Prompt string to prepend to sequences
     """
-    dpo_samples = []
-
-    for _, row in pairs_df.iterrows():
-        sample = {
+    #dpo_samples = []
+    #for _, row in pairs_df.iterrows():
+    #    sample = {
+    #        "prompt": prompt,
+    #        "chosen": row['chosen'],
+    #        "rejected": row['rejected']
+    #    }
+    #    dpo_samples.append(sample)
+    dpo_dict = {
             "prompt": prompt,
             "chosen": row['chosen'],
             "rejected": row['rejected']
-        }
-        dpo_samples.append(sample)
+    }
+
 
     return dpo_samples
