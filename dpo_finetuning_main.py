@@ -5,6 +5,7 @@ from dpo_utils import create_preference_pairs, format_for_dpo_trainer
 from transformers import  GPT2Tokenizer, GPT2LMHeadModel, GPT2Model
 from utils import protData_cleaning, find_longest_common_prefix, insert_char
 from trl import DPOTrainer, DPOConfig
+from datasets import Dataset
 
 # Useful variables
 batch_size = 10
@@ -34,8 +35,11 @@ clean_dataset['mutated_sequence'] = [f'{special_token}{s}{special_token}' for s 
 prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequence']))
 
 # Prepare data for DPO
-preferences = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1) 
-dpo_data = format_for_dpo_trainer(pairs_df=preferences, prompt=prompt)
+#preferences = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1) 
+#dpo_data = format_for_dpo_trainer(pairs_df=preferences, prompt=prompt)
+dpo_data_dict = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1, prompt=prompt) 
+
+dpo_data = dataset = Dataset.from_dict(dpo_data_dict)
 
 # Load SFT model
 # Get path to fine-tuned model
@@ -53,3 +57,5 @@ trainer = DPOTrainer(
     train_dataset=dpo_data,
     tokenizer= tokenizer,
 )
+
+trainer.train()

@@ -4,7 +4,7 @@ from itertools import combinations
 from typing import List, Tuple, Dict
 import random
 
-def create_preference_pairs(dataset: pd.DataFrame, min_activity_diff: float = 0.1) -> pd.DataFrame:
+def create_preference_pairs(dataset: pd.DataFrame, min_activity_diff: float, prompt:str) -> dict: # pd.DataFrame:
     """     
     Create preference pairs from protein sequences based on their activities.
     
@@ -16,20 +16,21 @@ def create_preference_pairs(dataset: pd.DataFrame, min_activity_diff: float = 0.
     dataset = dataset.sample(frac=1).reset_index(drop=True)
 
     pairs = []
-    for (idx1, row1), (idx2, row2) in combinations(dataset.iterrows(),2):
+    for (_, row1), (_, row2) in combinations(dataset.iterrows(),2):
         if abs(row1['activity_dp7'] - row2['activity_dp7']) >= min_activity_diff: # check meet min activity diff
             # Pick sequence with higher activity
             chosen = row1 if row1['activity_dp7'] > row2['activity_dp7'] else row2
             rejected = row2 if row1['activity_dp7'] > row2['activity_dp7'] else row1
 
             pairs.append({
+                'prompt': prompt,
                 'chosen': chosen['mutated_sequence'],
                 'rejected': rejected['mutated_sequence'],
-                'chosen_activity': chosen['activity_dp7'],
-                'rejected_activity': rejected['activity_dp7']
             })
     
-    return pd.DataFrame(pairs)
+    return {key: [d[key] for d in pairs] for key in pairs[0].keys()}
+
+    #return pd.DataFrame(pairs)
 
 def format_for_dpo_trainer(pairs_df: pd.DataFrame, prompt: str) -> List[Dict]:
     """
@@ -48,9 +49,9 @@ def format_for_dpo_trainer(pairs_df: pd.DataFrame, prompt: str) -> List[Dict]:
     #    }
     #    dpo_samples.append(sample)
     dpo_dict = {
-            "prompt": prompt,
-            "chosen": row['chosen'],
-            "rejected": row['rejected']
+            "prompt": pairs_df.shape[0]*[prompt],
+            "chosen": pairs_df['chosen'],
+            "rejected": pairs_df['rejected']
     }
 
 
