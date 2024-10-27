@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 
-def insert_char(seq, char, every):
+def insert_char(seq: str, char: str, every: int) -> list[str]:
     """
     Insert a character into a string every `n` characters.
     """
-    return char.join(seq[i:i+every] for i in range(0, len(seq), every))
+    return char.join(seq[i:i+every] for i in range(0, len(seq), every)) #.join() all items in a tuple of a string, using char as separator
 
-def protData_cleaning(dataset, remove_activity_NaN=True):
+def protData_cleaning(dataset: pd.DataFrame, remove_activity_NaN: bool=True):
     """ 
     Perform basic data cleaning: remove NaN, duplicates and ODD
     Args:
@@ -82,7 +82,7 @@ def protData_cleaning(dataset, remove_activity_NaN=True):
 
     return data_cleaned
 
-def find_longest_common_prefix(sequence: list[str]) -> tuple[str, int]:
+def find_longest_common_prefix(sequence: list[str]) -> str:
     """
     Find the longest common prefix shared by all strings in the input list.
 

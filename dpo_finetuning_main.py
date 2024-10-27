@@ -2,7 +2,7 @@ import os
 import torch
 import pandas as pd
 from dpo_utils import create_preference_pairs, format_for_dpo_trainer
-from utils import protData_cleaning, find_longest_common_prefix
+from utils import protData_cleaning, find_longest_common_prefix, insert_char
 from trl import DPOTrainer
 
 # Useful variables
@@ -18,8 +18,15 @@ dataset = pd.read_csv(file_path)
 clean_dataset = protData_cleaning(dataset=dataset, remove_activity_NaN=True)
 
 #trial = ['ABCDEFGHILDDHSBEJDNNSNDJF','ABCDEFGHILDdhsbdsh', 'ABCDEFGHILDndnsndnsj', 'ABCDEFGHILDndjsndj']
+##Convert data to FASTA file format and add special token 
+# 1st  we have to introduce new line characters every 60 amino acids,
+# following the FASTA file format.
+clean_dataset['mutated_sequence'] = [insert_char(clean_dataset['mutated_sequence'].iloc[i], char='\n', every=60) for i in range(len(clean_dataset))]
 
-#TODO: DATA need to be in FASTA format!
+
+# 2nd need to add "<|endoftext|>" token at the beginning and end of each seq
+special_token = "<|endoftext|>"
+clean_dataset['mutated_sequence'] = [f'{special_token}{s}{special_token}' for s in clean_dataset['mutated_sequence']]
 
 # Find longest prefix shared by all sequences for prompt
 prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequence']))
