@@ -46,19 +46,27 @@ dpo_data = Dataset.from_dict(dpo_data_dict)
 root_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(root_dir,'output')
 
+#model_path = "nferruz/ProtGPT2"
+#model_path = 'gpt2-large'
 tokenizer = GPT2Tokenizer.from_pretrained(model_path)
 #model_head = GPT2LMHeadModel.from_pretrained(model_path)
 model_head = AutoModelForCausalLM.from_pretrained(model_path)
 
-training_args = DPOConfig(output_dir="dpo_output", logging_steps=10)
+training_args = DPOConfig(output_dir="dpo_output", 
+                          logging_steps=10,
+                          per_device_train_batch_size=1,
+                          gradient_accumulation_steps=8,
+                          gradient_checkpointing=True,
+                          learning_rate=5e-5,
+                         )
 trainer = DPOTrainer(
     model_head,
     ref_model=None,
     args=training_args,
-    beta=0.1,
     train_dataset=dpo_data,
     tokenizer= tokenizer,
     beta=0.1,
+    max_length=450,
 )
 
-#trainer.train()
+trainer.train()
