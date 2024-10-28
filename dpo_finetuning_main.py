@@ -2,7 +2,7 @@ import os
 import torch
 import pandas as pd
 from dpo_utils import create_preference_pairs, format_for_dpo_trainer
-from transformers import  GPT2Tokenizer, GPT2LMHeadModel, GPT2Model
+from transformers import  GPT2Tokenizer, GPT2LMHeadModel, GPT2Model, AutoModelForCausalLM
 from utils import protData_cleaning, find_longest_common_prefix, insert_char
 from trl import DPOTrainer, DPOConfig
 from datasets import Dataset
@@ -39,7 +39,7 @@ prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequenc
 #dpo_data = format_for_dpo_trainer(pairs_df=preferences, prompt=prompt)
 dpo_data_dict = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1, prompt=prompt) 
 
-dpo_data = dataset = Dataset.from_dict(dpo_data_dict)
+dpo_data = Dataset.from_dict(dpo_data_dict)
 
 # Load SFT model
 # Get path to fine-tuned model
@@ -47,15 +47,18 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(root_dir,'output')
 
 tokenizer = GPT2Tokenizer.from_pretrained(model_path)
-model_head = GPT2LMHeadModel.from_pretrained(model_path)
+#model_head = GPT2LMHeadModel.from_pretrained(model_path)
+model_head = AutoModelForCausalLM.from_pretrained(model_path)
 
 training_args = DPOConfig(output_dir="dpo_output", logging_steps=10)
 trainer = DPOTrainer(
     model_head,
+    ref_model=None,
     args=training_args,
     beta=0.1,
     train_dataset=dpo_data,
     tokenizer= tokenizer,
+    beta=0.1,
 )
 
-trainer.train()
+#trainer.train()
