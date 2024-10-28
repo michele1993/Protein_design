@@ -38,7 +38,11 @@ prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequenc
 #preferences = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1) 
 #dpo_data = format_for_dpo_trainer(pairs_df=preferences, prompt=prompt)
 dpo_data_dict = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1, prompt=prompt) 
-
+print(type(dpo_data_dict))
+print(type(dpo_data_dict['prompt'][10]))
+print(type(dpo_data_dict['chosen'][10]))
+print(type(dpo_data_dict['rejected'][10]))
+exit()
 dpo_data = Dataset.from_dict(dpo_data_dict)
 
 # Load SFT model
@@ -46,7 +50,7 @@ dpo_data = Dataset.from_dict(dpo_data_dict)
 root_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(root_dir,'output')
 
-#model_path = "nferruz/ProtGPT2"
+model_path = "nferruz/ProtGPT2"
 #model_path = 'gpt2-large'
 tokenizer = GPT2Tokenizer.from_pretrained(model_path)
 #model_head = GPT2LMHeadModel.from_pretrained(model_path)
@@ -60,7 +64,7 @@ training_args = DPOConfig(output_dir="dpo_output",
                           learning_rate=5e-5,
                          )
 trainer = DPOTrainer(
-    model_head,
+    model=model_head,
     ref_model=None,
     args=training_args,
     train_dataset=dpo_data,

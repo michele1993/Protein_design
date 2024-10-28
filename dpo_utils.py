@@ -15,20 +15,22 @@ def create_preference_pairs(dataset: pd.DataFrame, min_activity_diff: float, pro
     # Shuffle data just in case
     dataset = dataset.sample(frac=1).reset_index(drop=True)
 
-    pairs = []
+    dict_dataset = {
+        "prompt": [],
+        "chosen": [],
+        "rejected": []
+        }
     for (_, row1), (_, row2) in combinations(dataset.iterrows(),2):
         if abs(row1['activity_dp7'] - row2['activity_dp7']) >= min_activity_diff: # check meet min activity diff
             # Pick sequence with higher activity
             chosen = row1 if row1['activity_dp7'] > row2['activity_dp7'] else row2
             rejected = row2 if row1['activity_dp7'] > row2['activity_dp7'] else row1
 
-            pairs.append({
-                'prompt': prompt,
-                'chosen': chosen['mutated_sequence'],
-                'rejected': rejected['mutated_sequence'],
-            })
+            dict_dataset['prompt'].append(prompt)
+            dict_dataset['chosen'].append(chosen['mutated_sequence'])
+            dict_dataset['rejected'].append(rejected['mutated_sequence'])
     
-    return {key: [d[key] for d in pairs] for key in pairs[0].keys()}
+    return dict_dataset
 
     #return pd.DataFrame(pairs)
 
