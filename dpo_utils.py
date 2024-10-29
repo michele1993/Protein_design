@@ -31,30 +31,3 @@ def create_preference_pairs(dataset: pd.DataFrame, min_activity_diff: float, pro
             dict_dataset['rejected'].append(rejected['mutated_sequence'])
     
     return dict_dataset
-
-    #return pd.DataFrame(pairs)
-
-def format_for_dpo_trainer(pairs_df: pd.DataFrame, prompt: str) -> List[Dict]:
-    """
-    Format preference pairs for TRL DPOTrainer.
-
-    Args:
-        pairs_df: DataFrame with chosen and rejected sequences
-        prompt: Prompt string to prepend to sequences
-    """
-    #dpo_samples = []
-    #for _, row in pairs_df.iterrows():
-    #    sample = {
-    #        "prompt": prompt,
-    #        "chosen": row['chosen'],
-    #        "rejected": row['rejected']
-    #    }
-    #    dpo_samples.append(sample)
-    dpo_dict = {
-            "prompt": pairs_df.shape[0]*[prompt],
-            "chosen": pairs_df['chosen'],
-            "rejected": pairs_df['rejected']
-    }
-
-
-    return dpo_samples

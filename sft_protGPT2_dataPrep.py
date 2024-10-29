@@ -4,6 +4,8 @@ import numpy as np
 import torch
 from utils import protData_cleaning, insert_char
 
+" Clean and write training and validation data for run_clm.py SFT script"
+
 # Load data
 root_dir = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(root_dir,'dataset','sequences.csv')

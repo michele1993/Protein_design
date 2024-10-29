@@ -2,14 +2,14 @@ import os
 import torch
 import pandas as pd
 from dpo_utils import create_preference_pairs, format_for_dpo_trainer
-from transformers import  GPT2Tokenizer, GPT2LMHeadModel, GPT2Model, AutoModelForCausalLM
+from transformers import  GPT2Tokenizer, GPT2LMHeadModel, GPT2Model, AutoModelForCausalLM, TrainingArguments
 from utils import protData_cleaning, find_longest_common_prefix, insert_char
 from trl import DPOTrainer, DPOConfig
 from datasets import Dataset
 import copy
-
-# Useful variables
-batch_size = 10
+from peft import LoraConfig
+import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 # Load data
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,8 +36,6 @@ clean_dataset['mutated_sequence'] = [f'{special_token}{s}{special_token}' for s 
 prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequence']))
 
 # Prepare data for DPO
-#preferences = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1) 
-#dpo_data = format_for_dpo_trainer(pairs_df=preferences, prompt=prompt)
 dpo_data_dict = create_preference_pairs(dataset=clean_dataset, min_activity_diff=0.1, prompt=prompt) 
 dpo_data = Dataset.from_dict(dpo_data_dict)
 
@@ -46,30 +44,41 @@ dpo_data = Dataset.from_dict(dpo_data_dict)
 root_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(root_dir,'output')
 
-#model_path = "nferruz/ProtGPT2"
-model_path = 'gpt2-medium'
 tokenizer = GPT2Tokenizer.from_pretrained(model_path)
-#model_head = GPT2LMHeadModel.from_pretrained(model_path)
-model_head = AutoModelForCausalLM.from_pretrained(model_path)
+model_head = AutoModelForCausalLM.from_pretrained(model_path)#, torch_dtype=torch.bfloat16)
 tokenizer.pad_token = tokenizer.eos_token
 
-training_args = DPOConfig(output_dir="dpo_output", 
-                          logging_steps=10,
-                          per_device_train_batch_size=1,
-                          gradient_accumulation_steps=1,
-                          gradient_checkpointing=True,
-                          learning_rate=5e-5,
-                          remove_unused_columns=False,
-                          max_length=450,
-                          bf16=True
-                         )
+prompt_len = len(tokenizer.encode(prompt))
+
+peft_config = LoraConfig(
+        lora_alpha=128,
+        lora_dropout=0.05,
+        r=256,
+        bias="none",
+        target_modules="all-linear",
+        task_type="CAUSAL_LM",
+)
+training_args = DPOConfig(
+    overwrite_output_dir=True,
+    output_dir="dpo_output", 
+    per_device_train_batch_size=3,
+    gradient_accumulation_steps=8,
+    gradient_checkpointing=False,
+    learning_rate=1e-6,
+    push_to_hub=False,
+    max_length=425,
+    max_prompt_length=prompt_len,
+)
 trainer = DPOTrainer(
     model=model_head,
-    ref_model=copy.deepcopy(model_head),
+    ref_model=None,
+#    peft_config=peft_config,  
     args=training_args,
     train_dataset=dpo_data,
     tokenizer=tokenizer,
-    beta=0.1,
+    beta=0.1
 )
 
 trainer.train()
+# save model at the end of training
+trainer.save_model()
