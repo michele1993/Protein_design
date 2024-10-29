@@ -115,20 +115,7 @@ def find_longest_common_prefix(sequence: list[str]) -> str:
     prefix = ''.join(common_prefix)
     return prefix
 
-def calculatePerplexity(sequence: list[str], model: transformers.AutoModelForCausalLM, tokenizer: transformers.AutoTokenizer, dev: str):
-    """ 
-    Compute perplexity for a sequence
-    Args:
-        sequence: string sequence of amino acids
-        model: Head LLM model
-        tokenizer: model tokenizer to tokenize the sequence
-        dev: device
-    """
-    input_ids = torch.tensor(tokenizer.encode(sequence),device=dev).unsqueeze(1)
-    print(input_ids.size())
-    with torch.no_grad():
-        outputs = model(input_ids, labels=input_ids)
-    loss, logits = outputs[:2]
-    print(loss.size())
-    exit()
-    return math.exp(loss)
+def padding_attentionMask(seq_idx: torch.Tensor, pad_idx: int, device: 'str') -> torch.Tensor:
+     mask = (seq_idx != pad_idx).type(torch.int).to(device)
+     mask[:,0] = 1 # EOS token
+     return mask

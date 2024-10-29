@@ -3,9 +3,11 @@ from transformers import pipeline, GPT2Tokenizer, AutoModelForCausalLM
 import os
 from torch.distributions import Categorical
 import torch.nn.functional as F
-from utils import calculatePerplexity
+from utils import padding_attentionMask
 import pandas as pd
+import evaluate
 
+# Select correct device
 if torch.cuda.is_available():
     dev='cuda'
 else:
@@ -14,7 +16,7 @@ else:
 # Get path to fine-tuned model
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-model_type = 'dpo'
+model_type = None #'dpo'
 
 if model_type == 'sft':
     model_path = os.path.join(root_dir,'output')
@@ -25,13 +27,11 @@ else:
 
 # Initialise fine-tuned model and tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained(model_path)
+tokenizer.pad_token = tokenizer.eos_token
 #ft_protgpt2_generator = pipeline('text-generation', model=model_path, tokenizer=tokenizer, device=dev)
 
-# Propt based on fine-tuning
-prompt = "<|endoftext|>ATAPSIKSGTILHAWNWSFNTLKHNMKDIHDAGYTAIQTSPI"
-
 # Generate sequences
-n_sequences = 5
+prompt = "<|endoftext|>ATAPSIKSGTILHAWNWSFNTLKHNMKDIHDAGYTAIQTSPI"
 #with torch.no_grad():
 #    sequences = ft_protgpt2_generator(prompt, 
 #                                  max_length=425, 
@@ -50,27 +50,43 @@ n_sequences = 5
 # Convert to list of string
 #sequences = [d['generated_text'] for d in sequences]
 
-# Initialise model head to compute perplexity
-inputs = tokenizer(prompt, return_tensors="pt").input_ids
-ft_protgpt2_model = AutoModelForCausalLM.from_pretrained(model_path).to(dev)
-outputs = model.generate(inputs, max_new_tokens=425, do_sample=True, top_k=950, top_p=0.95)
-print(outputs.shape)
-exit()
+# Initialise model head 
+model = AutoModelForCausalLM.from_pretrained(model_path).to(dev)
 
 # Compute perplexity for each seq and store it with the corresponding seq
+perplexity = evaluate.load("perplexity", module_type="metric")
 dict_predictions = {
         "mutated_sequence": [],
         "perplexity": [],
         }
-batch_s = 5
-for i in range(0,len(sequences), batch_s):
-    s = sequences[i:i+batch_s]
-    perplexity = calculatePerplexity(sequence=s, model=ft_protgpt2_model, tokenizer=tokenizer, dev=dev)
-    seq = s['generated_text'].replace("<|endoftext|>", "")
+n_sequences = 4
+batch_s = 2
+with torch.no_grad():
+    for i in range(0, n_sequences, batch_s):
+        # Generate a sequence
+        batch_prompt = [prompt] * batch_s
+        inputs = tokenizer(batch_prompt, return_tensors="pt", padding=True).input_ids
+        attention_mask = padding_attentionMask(seq_idx=inputs, pad_idx=tokenizer.pad_token_id, device=dev)
+        seq_indx = model.generate(inputs, 
+                                  pad_token_id=tokenizer.eos_token_id, 
+                                  max_new_tokens=425, 
+                                  do_sample=True, 
+                                  top_k=950, 
+                                  repetition_penalty=1.2, 
+                                  use_cache=True, 
+                                  attention_mask=attention_mask)
+        seq = tokenizer.batch_decode(seq_indx)
 
-    dict_predictions["mutated_sequence"].append(seq)
-    dict_predictions["perplexity"].append(perplexity)
+        dict_predictions['mutated_sequence'].extend(seq)
 
+        # Compute perplexity for the sequence
+        results = perplexity.compute(model_id=model_path,
+                             predictions=seq,
+                             add_start_token=False,
+                             batch_size=batch_s,   
+                             device=dev)
+                                    
+        dict_predictions["perplexity"].extend(results["perplexities"])
 # Save as DataFrame
 predictions = pd.DataFrame.from_dict(dict_predictions)
 prediction_dir = os.path.join(root_dir,'inference')
