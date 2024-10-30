@@ -15,6 +15,7 @@ training_perplexities = json.load(open(training_perplexities_file))
 print("base: ",training_perplexities['base_perplexity']) 
 print("sft: ",training_perplexities['sft_perplexity']) 
 print("dpo: ",training_perplexities['dpo_perplexity'], "\n") 
+exit()
 
 # Load data
 root_dir = os.path.dirname(os.path.abspath(__file__))
