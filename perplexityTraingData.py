@@ -8,8 +8,7 @@ import evaluate
 import json
 
 """ 
-Investigate whether the dpo fine-tune protGPT2 model gives lower perplexity for 
-top 10% activity training sequenses compared to protGPT2 base and SFT models.
+Investigate protGPT2  perplexities for training data across different fine-tune and base models
 """
 
 # Select correct device
@@ -43,12 +42,11 @@ sft_path = os.path.join(root_dir,'output') #supervised fine-tunes model
 dpo_path = os.path.join(root_dir,'dpo_output') #dpo fine-tuned model
 
 # Compute perplexity for top % activity sequences  across two model
-top_percentage = 0.05
-data = clean_dataset.sort_values('activity_dp7', ascending=False)
-top_percent = int(len(data) * top_percentage)
-seq = data.head(top_percent)#['mutated_sequence']
-print(seq)
-exit()
+#top_percentage = 0.05
+#data = clean_dataset.sort_values('activity_dp7', ascending=False)
+#top_percent = int(len(data) * top_percentage)
+#seq = data.head(top_percent)#['mutated_sequence']
+seq = clean_dataset['mutated_sequence']
 
 perplexity = evaluate.load("perplexity", module_type="metric")
 
@@ -67,7 +65,7 @@ dpo_perplexity = perplexity.compute(model_id=dpo_path,
 
 
 # Save as dict to a JSON file
-result = {"base_perplexity": base_perplexity['mean_perplexity'], "sft_perplexity": sft_perplexity['mean_perplexity'], "dpo_perplexity": dpo_perplexity['mean_perplexity']}
+result = {"base_perplexity": base_perplexity['perplexities'], "sft_perplexity": sft_perplexity['perplexities'], "dpo_perplexity": dpo_perplexity['perplexities']}
 result_dir = os.path.join(root_dir,'results')
 os.makedirs(result_dir, exist_ok=True)
 result_file = os.path.join(result_dir,'TrainingDataPerplexities.json')
