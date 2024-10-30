@@ -1,5 +1,9 @@
 # Protein design
-This repository aims to analyze, sanitize and use a dataset of protein sequences with validated activities to design new alpha-amylase variants with improved activity. This follows from a technical exercise I was given for a job interview.
+This repository aims to analyze, sanitize and use a dataset of protein sequences with validated activities to design new alpha-amylase variants with improved activity. This is done through 4 main steps:
+1. Data sanitation, e.g, investigate/remove NaN and duplicate sequences, check each sequence only contain the natural amino acids, investigate/remove sequences with out of distribution lenghts.
+2. Fine-tune pretrained model: The repositiory uses the pretraind [protGPT2](https://huggingface.co/nferruz/ProtGPT2) base model and fine-tunes it to the enitre (cleaned) dataset.
+3. Model alignment: The repositiory uses [DPO](https://huggingface.co/docs/trl/main/dpo_trainer) to align the model towards protein sequences with high activities.
+4. Generation: Generate seversal sequenses given the aligned model and pick the 'best' one.      
 
 ## Virtual Environment
 
