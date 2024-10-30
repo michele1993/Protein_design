@@ -13,8 +13,8 @@ training_perplexities_file = os.path.join(result_dir,'TrainingDataPerplexities.j
 training_perplexities = json.load(open(training_perplexities_file))
 
 print("base: ",training_perplexities['base_perplexity']) 
-print("dpo: ",training_perplexities['dpo_perplexity']) 
-exit()
+print("sft: ",training_perplexities['sft_perplexity']) 
+print("dpo: ",training_perplexities['dpo_perplexity'], "\n") 
 
 # Load data
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -29,6 +29,7 @@ base_seq = pd.read_csv(base_path)
 
 print("dpo: ", np.mean(dpo_seq['perplexity']))
 print("base: ", np.mean(base_seq['perplexity']))
+exit()
 for d,e in zip(dpo_seq['mutated_sequence'], base_seq['mutated_sequence']):
     print(d==e)
     print(d, "\n")
