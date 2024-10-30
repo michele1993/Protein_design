@@ -30,29 +30,36 @@ plt.title("dpo-FT protGPT2 perplexity vs activity")
 ax = plt.gca()  # Get current axis
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-plt.show()
+#plt.show()
+fig_dir = os.path.join(root_dir,'img','perplexity_vs_activity.png')
+os.makedirs(fig_dir, exist_ok=True)
+plt.savefig(fig_dir, format='png', dpi=1400)
 
-print(len(dpo_training_perplexities))
-print(len(activities))
-exit()
 
 # Load data
 root_dir = os.path.dirname(os.path.abspath(__file__))
-dpo_path = os.path.join(result_dir,'dpo_predictions_trial.csv')
-base_path = os.path.join(result_dir,'base_predictions_trial.csv')
+dpo_path = os.path.join(result_dir,'dpo_predictions.csv')
 
 
-# Load all data here since lightweight
+# Find best generated sequenses using a mix of perplexity values and seq lenght
 dpo_seq = pd.read_csv(dpo_path)
-base_seq = pd.read_csv(base_path)
+mean_perplexity = dpo_seq['perplexity'].mean()
+std_perplexity = dpo_seq['perplexity'].std()
+dpo_sorted = dpo_seq.sort_values(by='perplexity')
+dpo_sorted.reset_index(drop=True)
 
 
-print("dpo: ", np.mean(dpo_seq['perplexity']))
-print("base: ", np.mean(base_seq['perplexity']))
-exit()
-for d,e in zip(dpo_seq['mutated_sequence'], base_seq['mutated_sequence']):
-    print(d==e)
-    print(d, "\n")
-    print(e, "\n")
-    exit()
+best_seq = []
+perplexities = []
+for s,p in zip(dpo_sorted['mutated_sequence'], dpo_sorted['perplexity']):
+    clean_seq = "".join(char for char in s if char.isalpha())
+    if len(clean_seq) <= 430 and len(clean_seq) >= 420:
+        best_seq.append(clean_seq)
+        perplexities.append(p)
+    if len(best_seq) == 100:
+        break
 
+# Write to file
+with open("results/best_100_seq.txt", "w") as file:
+    for s in best_seq:
+        file.write(s + "\n")
