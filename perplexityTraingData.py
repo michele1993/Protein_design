@@ -9,7 +9,7 @@ import json
 
 """ 
 Investigate whether the dpo fine-tune protGPT2 model gives lower perplexity for 
-top 10% activity training sequenses compared to protGPT2 base model .
+top 10% activity training sequenses compared to protGPT2 base and SFT models.
 """
 
 # Select correct device
@@ -38,12 +38,14 @@ clean_dataset['mutated_sequence'] = [f'{special_token}{s}{special_token}' for s 
 
 # Get path to dpo fine-tuned and base model
 root_dir = os.path.dirname(os.path.abspath(__file__))
-dpo_path = os.path.join(root_dir,'dpo_output')
-base_path = 'nferruz/ProtGPT2'
+base_path = 'nferruz/ProtGPT2' # base model
+sft_path = os.path.join(root_dir,'output') #supervised fine-tunes model
+dpo_path = os.path.join(root_dir,'dpo_output') #dpo fine-tuned model
 
-# Compute perplexity for best 10% activity sequences  across two model
+# Compute perplexity for top % activity sequences  across two model
+top_percentage = 0.2
 data = clean_dataset.sort_values('activity_dp7', ascending=False)
-top_percent = int(len(data) * 1)
+top_percent = int(len(data) * top_percentage)
 seq = data.head(top_percent)['mutated_sequence']
 
 perplexity = evaluate.load("perplexity", module_type="metric")
@@ -52,13 +54,18 @@ base_perplexity = perplexity.compute(model_id=base_path,
                              predictions=seq,
                              add_start_token=False,
                              device=dev)
+sft_perplexity = perplexity.compute(model_id=sft_path,
+                             predictions=seq,
+                             add_start_token=False,
+                             device=dev)
 dpo_perplexity = perplexity.compute(model_id=dpo_path,
                              predictions=seq,
                              add_start_token=False,
                              device=dev)
 
+
 # Save as dict to a JSON file
-result = {"base_perplexity": base_perplexity['mean_perplexity'],"dpo_perplexity": dpo_perplexity['mean_perplexity']}
+result = {"base_perplexity": base_perplexity['mean_perplexity'], "sft_perplexity": sft_perplexity['mean_perplexity'], "dpo_perplexity": dpo_perplexity['mean_perplexity']}
 result_dir = os.path.join(root_dir,'results')
 os.makedirs(result_dir, exist_ok=True)
 result_file = os.path.join(result_dir,'TrainingDataPerplexities.json')
