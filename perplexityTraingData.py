@@ -25,7 +25,7 @@ file_path = os.path.join(root_dir,'dataset','sequences.csv')
 # Load all data here since lightweight
 dataset = pd.read_csv(file_path)
 # Clean data
-clean_dataset = protData_cleaning(dataset=dataset, remove_activity_NaN=False)
+clean_dataset = protData_cleaning(dataset=dataset, remove_activity_NaN=True)
 
 ##Convert data to FASTA file format and add special token 
 # 1st  we have to introduce new line characters every 60 amino acids,
@@ -42,9 +42,9 @@ dpo_path = os.path.join(root_dir,'dpo_output')
 base_path = 'nferruz/ProtGPT2'
 
 # Compute perplexity for best 10% activity sequences  across two model
-seq = clean_dataset['mutated_sequence'].sort_values(by='activity_dp7', ascending=False)
-top_10_percent = int(len(df) * 0.1)
-seq = seq.head(top_10_percent)['mutated_sequence']
+data = clean_dataset.sort_values('activity_dp7', ascending=False)
+top_10_percent = int(len(data) * 0.1)
+seq = data.head(top_10_percent)['mutated_sequence']
 
 perplexity = evaluate.load("perplexity", module_type="metric")
 
