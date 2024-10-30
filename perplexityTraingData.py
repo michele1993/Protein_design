@@ -8,6 +8,11 @@ from datasets import Dataset
 import evaluate
 import json
 
+""" 
+Investigate whether the dpo fine-tune protGPT2 model gives lower perplexity for 
+top 10% activity training sequenses compared to protGPT2 base model .
+"""
+
 # Select correct device
 if torch.cuda.is_available():
     dev='cuda'
@@ -41,8 +46,11 @@ base_path = 'nferruz/ProtGPT2'
 tokenizer = GPT2Tokenizer.from_pretrained(model_path, local_files_only=True)
 # Load base vs dpo fine-tuned model
 
-# Compute perplexity for training data across two model
-seq = clean_dataset['mutated_seqquence']
+# Compute perplexity for best 10% activity sequences  across two model
+seq = clean_dataset['mutated_sequence'].sort_values(by='activity_dp7', ascending=False)
+top_10_percent = int(len(df) * 0.1)
+seq = seq.head(top_10_percent)['mutated_sequence']
+
 perplexity = evaluate.load("perplexity", module_type="metric")
 
 base_perplexity = perplexity.compute(model_id=base_path,
