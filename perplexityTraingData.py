@@ -43,8 +43,8 @@ base_path = 'nferruz/ProtGPT2'
 
 # Compute perplexity for best 10% activity sequences  across two model
 data = clean_dataset.sort_values('activity_dp7', ascending=False)
-top_10_percent = int(len(data) * 0.1)
-seq = data.head(top_10_percent)['mutated_sequence']
+top_percent = int(len(data) * 1)
+seq = data.head(top_percent)['mutated_sequence']
 
 perplexity = evaluate.load("perplexity", module_type="metric")
 
@@ -57,8 +57,8 @@ dpo_perplexity = perplexity.compute(model_id=dpo_path,
                              add_start_token=False,
                              device=dev)
 
+# Save as dict to a JSON file
 result = {"base_perplexity": base_perplexity['mean_perplexity'],"dpo_perplexity": dpo_perplexity['mean_perplexity']}
-# Save to a JSON file
 result_dir = os.path.join(root_dir,'results')
 os.makedirs(result_dir, exist_ok=True)
 result_file = os.path.join(result_dir,'TrainingDataPerplexities.json')
