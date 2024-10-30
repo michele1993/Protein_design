@@ -46,7 +46,9 @@ dpo_path = os.path.join(root_dir,'dpo_output') #dpo fine-tuned model
 top_percentage = 0.05
 data = clean_dataset.sort_values('activity_dp7', ascending=False)
 top_percent = int(len(data) * top_percentage)
-seq = data.head(top_percent)['mutated_sequence']
+seq = data.head(top_percent)#['mutated_sequence']
+print(seq)
+exit()
 
 perplexity = evaluate.load("perplexity", module_type="metric")
 
