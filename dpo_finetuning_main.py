@@ -47,7 +47,7 @@ model_head = AutoModelForCausalLM.from_pretrained(model_path, local_files_only=T
 tokenizer.pad_token = tokenizer.eos_token
 
 # Find longest prefix shared by all sequences for prompt
-prompt = special_token #find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequence']))
+prompt = find_longest_common_prefix(sequence=list(clean_dataset['mutated_sequence']))
 prompt_len = len(tokenizer.encode(prompt))
 
 # Prepare data for DPO
@@ -77,7 +77,7 @@ training_args = DPOConfig(
     gradient_checkpointing=False,
     learning_rate=1e-6,
     push_to_hub=False,
-    max_length=425,
+    max_length=150+prompt_len,# based on training data
     max_prompt_length=prompt_len,
 )
 trainer = DPOTrainer(

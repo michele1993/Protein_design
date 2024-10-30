@@ -36,27 +36,9 @@ else:
 # Initialise fine-tuned model and tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained(model_path, local_files_only=True)
 tokenizer.pad_token = tokenizer.eos_token
-#ft_protgpt2_generator = pipeline('text-generation', model=model_path, tokenizer=tokenizer, device=dev)
 
 # Generate sequences
-prompt = "<|endoftext|>ATAPSIKSGTILHAWNWSFNTLKHNMKDIHDAGYTAIQTSPI"
-#with torch.no_grad():
-#    sequences = ft_protgpt2_generator(prompt, 
-#                                  max_length=425, 
-#                                  do_sample=True, 
-#                                  top_k=950, 
-#                                  repetition_penalty=1.2, 
-#                                  num_return_sequences=n_sequences, 
-#                                  eos_token_id=tokenizer.eos_token_id,
-#                                  batch_size=1,
-#                                  use_cache=False
-#                                 )
-# Free-up GPU memory by deleting generator
-#del ft_protgpt2_generator
-#torch.cuda.empty_cache()
-
-# Convert to list of string
-#sequences = [d['generated_text'] for d in sequences]
+prompt = "<|endoftext|>ATAPSIKSGTILHAWNWSFNTLKHNMKDIHDAGYTAIQTSPI" # based on training data
 
 # Initialise model head 
 model = AutoModelForCausalLM.from_pretrained(model_path, local_files_only=True).to(dev)
