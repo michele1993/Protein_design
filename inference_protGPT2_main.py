@@ -13,13 +13,15 @@ if torch.cuda.is_available():
 else:
     dev='cpu'
 
-# Extract fine-tuned model for inference
 parser = argparse.ArgumentParser()
-parser.add_argument('--model-name','-m',type=str,nargs='?',default='dpo')
+parser.add_argument('--model-name','-m',type=str,nargs='?',default='dpo') # model type: base, SFT, DPO
+parser.add_argument('--n-sequences','-s',type=int,nargs='?',default=1000) # n. of sequences generated
+# Extract arguments
 args = parser.parse_args()
 model_type = args.model_name
+n_sequences = args.n_sequences
 
-# Get path to fine-tuned model
+# Select fine-tuned model for inference
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
 if model_type == 'sft':
@@ -65,7 +67,6 @@ dict_predictions = {
         "mutated_sequence": [],
         "perplexity": [],
         }
-n_sequences = 90#10000
 batch_s = 30
 with torch.no_grad():
     for i in range(0, n_sequences, batch_s):
