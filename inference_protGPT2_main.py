@@ -5,6 +5,7 @@ from torch.distributions import Categorical
 import torch.nn.functional as F
 import pandas as pd
 import evaluate
+import argparse
 
 # Select correct device
 if torch.cuda.is_available():
@@ -12,10 +13,14 @@ if torch.cuda.is_available():
 else:
     dev='cpu'
 
+# Extract fine-tuned model for inference
+parser = argparse.ArgumentParser()
+parser.add_argument('--model-name','-m',type=str,nargs='?',default='dpo')
+args = parser.parse_args()
+model_type = args.model_name
+
 # Get path to fine-tuned model
 root_dir = os.path.dirname(os.path.abspath(__file__))
-
-model_type = 'dpo'
 
 if model_type == 'sft':
     model_path = os.path.join(root_dir,'output')
