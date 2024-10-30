@@ -119,3 +119,8 @@ def padding_attentionMask(seq_idx: torch.Tensor, pad_idx: int, device: 'str') ->
      mask = (seq_idx != pad_idx).type(torch.int).to(device)
      mask[:,0] = 1 # EOS token
      return mask
+
+def max_idx_len(str_list: list[str], tokenizer: transformers.AutoTokenizer) -> int: 
+    """ Compute max token seq length across a list of strings for a given tokenizer"""
+    seq_idx = tokenizer(str_list).input_ids
+    return max(len(l) for l in seq_idx)

@@ -19,11 +19,6 @@ dataset = pd.read_csv(file_path)
 ## Apply basic data cleaning
 clean_data = protData_cleaning(dataset=dataset, remove_activity_NaN=True)
 
-for a in clean_data['activity_dp7']:
-    print(a)
-exit()
-
-
 ## Divide training and validation data
 shuffled_data = clean_data.sample(frac=1).reset_index(drop=True) # shuffle data
 
