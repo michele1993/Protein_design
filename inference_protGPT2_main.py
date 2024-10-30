@@ -98,7 +98,7 @@ with torch.no_grad():
         dict_predictions["perplexity"].extend(results["perplexities"])
 # Save as DataFrame
 predictions = pd.DataFrame.from_dict(dict_predictions)
-prediction_dir = os.path.join(root_dir,'inference')
+prediction_dir = os.path.join(root_dir,'results')
 os.makedirs(prediction_dir, exist_ok=True)
-prediction_file = os.path.join(prediction_dir,f'{model_type}_predictions_trial.csv')
+prediction_file = os.path.join(prediction_dir,f'{model_type}_predictions.csv')
 predictions.to_csv(prediction_file, index=False)
