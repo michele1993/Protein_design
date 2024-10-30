@@ -15,7 +15,7 @@ else:
 # Get path to fine-tuned model
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-model_type = 'base'
+model_type = 'dpo'
 
 if model_type == 'sft':
     model_path = os.path.join(root_dir,'output')
