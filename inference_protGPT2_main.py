@@ -3,7 +3,6 @@ from transformers import pipeline, GPT2Tokenizer, AutoModelForCausalLM
 import os
 from torch.distributions import Categorical
 import torch.nn.functional as F
-from utils import padding_attentionMask
 import pandas as pd
 import evaluate
 
@@ -16,7 +15,7 @@ else:
 # Get path to fine-tuned model
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
-model_type = 'dpo'
+model_type = 'base'
 
 if model_type == 'sft':
     model_path = os.path.join(root_dir,'output')
@@ -67,8 +66,9 @@ with torch.no_grad():
     for i in range(0, n_sequences, batch_s):
         # Generate a sequence
         batch_prompt = [prompt] * batch_s
-        inputs = tokenizer(batch_prompt, return_tensors="pt", padding=True, device=dev).input_ids.to(dev)
-        attention_mask = padding_attentionMask(seq_idx=inputs, pad_idx=tokenizer.pad_token_id, device=dev)
+        tokenizer_output = tokenizer(batch_prompt, return_tensors="pt", padding=True)
+        inputs = tokenizer_output.input_ids.to(dev)
+        attention_mask = tokenizer_output.attention_mask.to(dev)
         seq_indx = model.generate(inputs, 
                                   pad_token_id=tokenizer.eos_token_id, 
                                   eos_token_id= tokenizer.eos_token_id,
