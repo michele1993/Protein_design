@@ -61,8 +61,8 @@ dict_predictions = {
         "mutated_sequence": [],
         "perplexity": [],
         }
-n_sequences = 10000
-batch_s = 10
+n_sequences = 90#10000
+batch_s = 30
 with torch.no_grad():
     for i in range(0, n_sequences, batch_s):
         # Generate a sequence
@@ -71,7 +71,8 @@ with torch.no_grad():
         attention_mask = padding_attentionMask(seq_idx=inputs, pad_idx=tokenizer.pad_token_id, device=dev)
         seq_indx = model.generate(inputs, 
                                   pad_token_id=tokenizer.eos_token_id, 
-                                  max_new_tokens=425, 
+                                  eos_token_id= tokenizer.eos_token_id,
+                                  max_new_tokens=160,  # Based on max len of training data + some flexibility
                                   do_sample=True, 
                                   top_k=950, 
                                   repetition_penalty=1.2, 
@@ -93,5 +94,5 @@ with torch.no_grad():
 predictions = pd.DataFrame.from_dict(dict_predictions)
 prediction_dir = os.path.join(root_dir,'inference')
 os.makedirs(prediction_dir, exist_ok=True)
-prediction_file = os.path.join(prediction_dir,f'{model_type}_predictions.csv')
+prediction_file = os.path.join(prediction_dir,f'{model_type}_predictions_trial.csv')
 predictions.to_csv(prediction_file, index=False)
