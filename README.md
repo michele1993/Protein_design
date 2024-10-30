@@ -25,7 +25,7 @@ To avoid having to manually activate the environment every time I use use
 Next, I begin by installing PyTorch. Since I am on mac I just install the default version without CUDA .
 
 ``` sh
-conda install python=3.9
+conda install python=3.12.7
 pip3 install torch torchvision torchaudio
 ```
 Next, I install pandas to efficiently read the dataset, which is stored in a `.cvs` file.
@@ -34,23 +34,22 @@ Next, I install pandas to efficiently read the dataset, which is stored in a `.c
 pip3 install pandas
 ```
 ## Generative protein sequence base model 
-I experimented with [ProtGPT2](https://huggingface.co/nferruz/ProtGPT2) base model for protein sequences, which is available on Hugging Face. To do that, I install [Hugging Face package](https://huggingface.co/docs/transformers/installation) for Pytorch (CPU-only version).
+In order to use [ProtGPT2](https://huggingface.co/nferruz/ProtGPT2) base model for protein sequences, I installed [Hugging Face package](https://huggingface.co/docs/transformers/installation). However, I had to downgrade to earlier verison of it   
 ``` sh
-pip install transformers
+pip install transformers==4.45.2
 ```
-For CPU-only use,
-```sh
-pip install 'transformers[torch]'
-```
-The model also provides a fine-turning option, which allows you to fine-tune the model to a specific dataset. To do that, I dowloaded the `run_clm.py` file from the specified Hugging face [repository](https://github.com/huggingface/transformers/blob/main/examples/pytorch/language-modeling/run_clm.py).
-```sh
-wget https://raw.githubusercontent.com/huggingface/transformers/refs/heads/main/examples/pytorch/language-modeling/run_clm.py
-```
+due to a potential bug between the lastest realise and the `DPOTrainer` of the `trl` package.
 
-**Note**: When trying to run `python run_clm.py` I encoutered an error with my Hugging face version. This was solved by installing Hugging face from source.
+To supervised fine tune protGPT2 to my dataset, I dowloaded the `run_clm.py` file from the specified Hugging face [repository](https://github.com/huggingface/transformers/blob/main).
 ```sh
-git clone https://github.com/huggingface/transformers.git
-cd transformers
-pip install -e .
+wget https://github.com/huggingface/transformers/blob/26a9443dae41737e665910fbb617173e17a0cd18/examples/pytorch/language-modeling/run_clm.py
 ```
+**Note**: the `run_clm.py` file must be downloaded from the past commit relating to the `transformers==4.45.2` release, otherwise it won't work with the version of `transformers` installed in the previous step.
+
+Finally, I installed the latest version of the [TRL](https://huggingface.co/docs/trl/index) to align protGPT2 with DPO.
+```sh
+pip install trl
+```
+Additional requirements can be found in the `requirments.txt` file.
+
 
