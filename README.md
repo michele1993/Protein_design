@@ -3,7 +3,11 @@ This repository aims to analyze, sanitize and use a dataset of protein sequences
 1. Data sanitation, e.g, investigate/remove NaN and duplicate sequences, check each sequence only contains natural amino acids, investigate/remove sequences with out of distribution lenghts.
 2. Fine-tune a pretrained model: The repositiory uses the pretraind [protGPT2](https://huggingface.co/nferruz/ProtGPT2) base model and fine-tunes it to the enitre (cleaned) alpha-amylase dataset (i.e., independtly of activities) with SFT.
 3. Model alignment: The repositiory uses [DPO](https://huggingface.co/docs/trl/main/dpo_trainer) to align the model towards protein sequences with high activities.
-4. Generation: Generate seversal sequenses given the aligned model and pick the 'best' one.      
+4. Generation: Generate seversal sequenses given the dpo aligned model and pick the 'best' one based on a mixture of model perxplexity and sequence length (see below).
+
+In the figure below, I show the dpo fine-tuned model has lower perplexity for training sequences with high activity. Therefore, I use the perplexity of the dpo fine-tuned model generated sequences as a proxy for high activity. This is also based on the fact that protGPT2 seems to be well calibrated (see [protGPT2](https://huggingface.co/nferruz/ProtGPT2)).
+
+<img src="https://github.com/michele1993/Protein_design/blob/main/img/perplexity_vs_activity.png" alt="Figure: Perplexity vs activity for the DPO fine-tuned model of training sequences" width="50%" height="30%">
 
 # Installation
 ## Virtual Environment
