@@ -51,17 +51,15 @@ perplexity = evaluate.load("perplexity", module_type="metric")
 base_perplexity = perplexity.compute(model_id=base_path,
                              predictions=seq,
                              add_start_token=False,
-                             batch_size=batch_s,   
                              device=dev)
 dpo_perplexity = perplexity.compute(model_id=dpo_path,
                              predictions=seq,
                              add_start_token=False,
-                             batch_size=batch_s,   
                              device=dev)
 
 result = {"base_perplexity": base_perplexity['mean_perplexity'],"dpo_perplexity": dpo_perplexity['mean_perplexity']}
 # Save to a JSON file
 result_dir = os.path.join(root_dir,'results')
 os.makedirs(result_dir, exist_ok=True)
-with open("TrainingDataPerplexities.json", "w") as file:
-    json.dump(result, result_dir)
+result_file = os.path.join(result_dir,'TrainingDataPerplexities.json')
+json.dump(result,open(result_file, 'w'))
