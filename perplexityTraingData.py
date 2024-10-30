@@ -43,7 +43,7 @@ sft_path = os.path.join(root_dir,'output') #supervised fine-tunes model
 dpo_path = os.path.join(root_dir,'dpo_output') #dpo fine-tuned model
 
 # Compute perplexity for top % activity sequences  across two model
-top_percentage = 0.2
+top_percentage = 0.05
 data = clean_dataset.sort_values('activity_dp7', ascending=False)
 top_percent = int(len(data) * top_percentage)
 seq = data.head(top_percent)['mutated_sequence']
