@@ -44,8 +44,8 @@ dpo_data = Dataset.from_dict(dpo_data_dict)
 root_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(root_dir,'output')
 
-tokenizer = GPT2Tokenizer.from_pretrained(model_path)
-model_head = AutoModelForCausalLM.from_pretrained(model_path)#, torch_dtype=torch.bfloat16)
+tokenizer = GPT2Tokenizer.from_pretrained(model_path, local_files_only=True)
+model_head = AutoModelForCausalLM.from_pretrained(model_path, local_files_only=True)#, torch_dtype=torch.bfloat16)
 tokenizer.pad_token = tokenizer.eos_token
 
 prompt_len = len(tokenizer.encode(prompt))

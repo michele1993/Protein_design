@@ -34,7 +34,7 @@ else:
     raise ValueError('Need to select a valid model type for inference')
 
 # Initialise fine-tuned model and tokenizer
-tokenizer = GPT2Tokenizer.from_pretrained(model_path)
+tokenizer = GPT2Tokenizer.from_pretrained(model_path, local_files_only=True)
 tokenizer.pad_token = tokenizer.eos_token
 #ft_protgpt2_generator = pipeline('text-generation', model=model_path, tokenizer=tokenizer, device=dev)
 
@@ -59,7 +59,7 @@ prompt = "<|endoftext|>ATAPSIKSGTILHAWNWSFNTLKHNMKDIHDAGYTAIQTSPI"
 #sequences = [d['generated_text'] for d in sequences]
 
 # Initialise model head 
-model = AutoModelForCausalLM.from_pretrained(model_path).to(dev)
+model = AutoModelForCausalLM.from_pretrained(model_path, local_files_only=True).to(dev)
 
 # Compute perplexity for each seq and store it with the corresponding seq
 perplexity = evaluate.load("perplexity", module_type="metric")
@@ -67,7 +67,7 @@ dict_predictions = {
         "mutated_sequence": [],
         "perplexity": [],
         }
-batch_s = 30
+batch_s = 100
 with torch.no_grad():
     for i in range(0, n_sequences, batch_s):
         # Generate a sequence
