@@ -1,7 +1,7 @@
 import os
 import torch
 import pandas as pd
-from dpo_utils import create_preference_pairs, format_for_dpo_trainer
+from dpo_utils import create_preference_pairs
 from transformers import  GPT2Tokenizer, AutoModelForCausalLM
 from utils import protData_cleaning, find_longest_common_prefix, insert_char
 from trl import DPOTrainer, DPOConfig

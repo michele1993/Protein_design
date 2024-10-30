@@ -1,8 +1,7 @@
 import os
 import torch
 import pandas as pd
-from dpo_utils import create_preference_pairs, format_for_dpo_trainer
-from transformers import  GPT2Tokenizer, GPT2LMHeadModel, GPT2Model, AutoModelForCausalLM, TrainingArguments
+from dpo_utils import create_preference_pairs
 from utils import protData_cleaning, insert_char
 from datasets import Dataset
 import evaluate
@@ -41,10 +40,6 @@ clean_dataset['mutated_sequence'] = [f'{special_token}{s}{special_token}' for s 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 dpo_path = os.path.join(root_dir,'dpo_output')
 base_path = 'nferruz/ProtGPT2'
-
-# Initialise single tokenizer (i.e., same across models)
-tokenizer = GPT2Tokenizer.from_pretrained(model_path, local_files_only=True)
-# Load base vs dpo fine-tuned model
 
 # Compute perplexity for best 10% activity sequences  across two model
 seq = clean_dataset['mutated_sequence'].sort_values(by='activity_dp7', ascending=False)
