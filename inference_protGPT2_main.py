@@ -78,7 +78,7 @@ with torch.no_grad():
                                   repetition_penalty=1.2, 
                                   use_cache=True, 
                                   attention_mask=attention_mask)
-        seq = tokenizer.batch_decode(seq_indx)
+        seq = tokenizer.batch_decode(seq_indx, skip_special_tokens=True)
 
         dict_predictions['mutated_sequence'].extend(seq)
 
