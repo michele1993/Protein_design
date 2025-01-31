@@ -54,6 +54,10 @@ Finally, I installed the latest version of the [TRL](https://huggingface.co/docs
 ```sh
 pip install trl
 ```
-Additional requirements can be found in the `requirments.txt` file.
+I also use [evaluate](https://huggingface.co/docs/evaluate/index) from Hugging Face to compute the model perplexity for each given sequense.
+```sh
+pip install evaluate
+```
+Additional requirements can be found in the `requirements.txt` file.
 
 
